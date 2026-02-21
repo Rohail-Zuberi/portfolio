@@ -1,0 +1,21 @@
+﻿[
+	{
+		"name": "Home",
+		"url": "/"
+	},
+	{
+		"name": "Projects",
+		"url": "/projects"
+	},
+	{
+		"name": "About",
+		"url": "/about"
+	},
+	{
+		"name": "Resume",
+		"url": "/Rohail_Zuberi_Resume.pdf",
+		"tooltip": "download resume",
+		"download": "Rohail_Zuberi_Resume.pdf"
+	}
+]
+

@@ -1,0 +1,26 @@
+[
+	{
+		"name": "Project One",
+		"description": "A short description of your project, responsibilities, and impact.",
+		"image": "/assets/images/projects/tempmail.best.png",
+		"url": "https://github.com/your-username/project-one"
+	},
+	{
+		"name": "Project Two",
+		"description": "Highlight the core problem solved and key technologies used.",
+		"image": "/assets/images/projects/dns.surf.png",
+		"url": "https://github.com/your-username/project-two"
+	},
+	{
+		"name": "Project Three",
+		"description": "Mention performance, scale, or a measurable outcome where possible.",
+		"image": "/assets/images/projects/html.zone.png",
+		"url": "https://github.com/your-username/project-three"
+	},
+	{
+		"name": "Project Four",
+		"description": "Use this card for a client project, product feature, or open-source work.",
+		"image": "/assets/images/projects/sink.cool.png",
+		"url": "https://github.com/your-username/project-four"
+	}
+]

@@ -1,0 +1,34 @@
+﻿[
+  {
+    "dates": "July 2025 - Present",
+    "role": "Head of Artificial Intelligence",
+    "company": "Autopilots",
+    "location": "Lahore, Pakistan (Remote)",
+    "description": "Leading AI and engineering initiatives to build scalable automations and Voice AI agents across sales, onboarding, CRM, and operations. Own end-to-end architecture and integrations with strong reliability and compliance guardrails.",
+    "logo": "/assets/images/experiences/autopilots.png"
+  },
+  {
+    "dates": "September 2024 - June 2025",
+    "role": "AI Integration Engineer",
+    "company": "Aerodyne Group",
+    "location": "Lahore, Pakistan",
+    "description": "Built and optimized cloud AI pipelines across AWS and Azure, including CI/CD migration and multi-cloud storage support. Improved pipeline flexibility and reduced operating costs through performance and infrastructure optimization.",
+    "logo": "/assets/images/experiences/aerodyne.jpg"
+  },
+  {
+    "dates": "July 2023 - August 2024",
+    "role": "Data Analyst",
+    "company": "Aerodyne Group",
+    "location": "Lahore, Pakistan",
+    "description": "Managed large-scale data workflows by organizing millions of images on AWS S3 and automating extraction of 15M+ MongoDB records for analytics. Supported computer vision model quality through annotation dataset creation and review.",
+    "logo": "/assets/images/experiences/aerodyne.jpg"
+  },
+  {
+    "dates": "June 2022 - August 2022",
+    "role": "Intern Research Assistant",
+    "company": "Lahore University of Management Sciences",
+    "location": "Lahore, Pakistan",
+    "description": "Contributed to research-oriented ML development for text and tabular data using scikit-learn and PyTorch. Implemented feature pipelines, evaluation metrics, and custom training loops with early stopping and LR scheduling.",
+    "logo": "/assets/images/experiences/lums.svg"
+  }
+]
