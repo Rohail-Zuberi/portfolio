@@ -1,4 +1,4 @@
----
+﻿---
 import menus from "../collections/menu.json";
 import Logo from "../components/logo.astro";
 ---
@@ -61,18 +61,12 @@ import Logo from "../components/logo.astro";
         </div>
         {
           menus.map((menu) => {
-            const downloadValue = "download" in menu ? menu.download : undefined;
-            const downloadName =
-              typeof downloadValue === "string"
-                ? downloadValue
-                : downloadValue === true
-                  ? "Rohail_Zuberi_Resume.pdf"
-                  : undefined;
+            const isPdf = menu.url.endsWith(".pdf");
             return (
               <a
                 href={menu.url}
-                title={menu.tooltip}
-                download={downloadName}
+                target={isPdf ? "_blank" : undefined}
+                rel={isPdf ? "noreferrer" : undefined}
                 class="relative flex items-center justify-center w-full px-3 py-2 font-medium tracking-wide text-center duration-200 ease-out sm:py-0 sm:mb-0 md:w-auto hover:text-neutral-900 dark:hover:text-white"
               >
                 {menu.name}
