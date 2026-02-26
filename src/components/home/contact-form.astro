@@ -29,6 +29,13 @@
           rows="6"
           class="w-full rounded-md border border-dashed border-neutral-400 bg-white px-3 py-2 text-sm text-neutral-900 outline-none transition focus:border-neutral-700 dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:border-neutral-300"
         ></textarea>
+        <p
+          id="contact-body-counter"
+          class="mt-1 text-xs text-neutral-500 dark:text-neutral-400"
+          aria-live="polite"
+        >
+          2000/2000
+        </p>
       </div>
 
       <button
@@ -43,6 +50,24 @@
 
 <script>
   const contactForm = document.querySelector("#contact-form");
+  const bodyInput = document.querySelector("#contact-body");
+  const bodyCounter = document.querySelector("#contact-body-counter");
+
+  const updateBodyCounter = () => {
+    if (!(bodyInput instanceof HTMLTextAreaElement) || !(bodyCounter instanceof HTMLElement)) {
+      return;
+    }
+
+    const maxLength = bodyInput.maxLength;
+    const remaining = maxLength - bodyInput.value.length;
+    bodyCounter.textContent = `${remaining}/${maxLength}`;
+  };
+
+  updateBodyCounter();
+
+  if (bodyInput instanceof HTMLTextAreaElement) {
+    bodyInput.addEventListener("input", updateBodyCounter);
+  }
 
   if (contactForm instanceof HTMLFormElement) {
     contactForm.addEventListener("submit", (event) => {
