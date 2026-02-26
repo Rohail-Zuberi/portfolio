@@ -2,7 +2,7 @@
   <div class="rounded-2xl border border-dashed border-neutral-300 p-5 dark:border-neutral-700 sm:p-6">
     <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">Send a Message</h2>
     <p id="contact-help" class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
-      Write your subject and message, then your email app opens with everything prefilled.
+      Write your subject and message. It will be sent directly to my inbox.
     </p>
 
     <form id="contact-form" class="mt-5 space-y-4" novalidate>
@@ -39,11 +39,18 @@
       </div>
 
       <button
+        id="contact-submit"
         type="submit"
         class="inline-flex items-center justify-center rounded-full border border-neutral-900 bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-neutral-100 transition hover:bg-white hover:text-neutral-900 dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-900 dark:hover:text-neutral-100"
       >
         Send Message
       </button>
+      <p
+        id="contact-status"
+        class="text-sm text-neutral-600 dark:text-neutral-400"
+        role="status"
+        aria-live="polite"
+      ></p>
     </form>
   </div>
 </section>
@@ -85,11 +92,42 @@
         return;
       }
 
-      const subject = `[portfolio] ${subjectInput.value.trim()}`;
-      const body = bodyInput.value.trim();
-      const mailtoUrl = `mailto:rohailzuberi5@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      const submitButton = document.querySelector("#contact-submit");
+      const statusElement = document.querySelector("#contact-status");
 
-      window.location.href = mailtoUrl;
+      if (!(submitButton instanceof HTMLButtonElement) || !(statusElement instanceof HTMLElement)) {
+        return;
+      }
+
+      submitButton.disabled = true;
+      statusElement.textContent = "Sending...";
+
+      fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          subject: subjectInput.value.trim(),
+          body: bodyInput.value.trim(),
+        }),
+      })
+        .then(async (response) => {
+          if (!response.ok) {
+            const payload = await response.json().catch(() => ({}));
+            throw new Error(payload?.message || "Unable to send message.");
+          }
+
+          contactForm.reset();
+          updateBodyCounter();
+          statusElement.textContent = "Message sent successfully.";
+        })
+        .catch((error) => {
+          statusElement.textContent = error instanceof Error ? error.message : "Unable to send message.";
+        })
+        .finally(() => {
+          submitButton.disabled = false;
+        });
     });
   }
 </script>

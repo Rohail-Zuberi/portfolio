@@ -18,6 +18,18 @@ npm run dev
 
 Site runs at `http://localhost:4321` by default.
 
+Create `.env` from `.env.example` before testing the contact form:
+
+```bash
+cp .env.example .env
+```
+
+Then set:
+
+- `RESEND_API_KEY` - API key from Resend
+- `CONTACT_TO_EMAIL` - your inbox address
+- `CONTACT_FROM_EMAIL` - sender identity (must be valid in your Resend account)
+
 ## Build and Preview
 
 ```bash
@@ -48,6 +60,8 @@ public/
 - `src/collections/menu.json` - Header nav items (including resume download)
 - `src/components/footer.astro` - Footer identity and social links
 - `src/components/logo.astro` - Header logo (light/dark versions)
+- `src/components/home/contact-form.astro` - Contact form UI and submit behavior
+- `src/pages/api/contact.ts` - Backend contact email endpoint
 
 ## Resume Download Setup
 
