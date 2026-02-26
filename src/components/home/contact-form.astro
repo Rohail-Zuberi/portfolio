@@ -41,25 +41,40 @@
       <button
         id="contact-submit"
         type="submit"
-        class="inline-flex items-center justify-center rounded-full border border-neutral-900 bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-neutral-100 transition hover:bg-white hover:text-neutral-900 dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-900 dark:hover:text-neutral-100"
+        class="inline-flex items-center justify-center rounded-full border border-neutral-900 bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-neutral-100 transition hover:bg-white hover:text-neutral-900 disabled:cursor-not-allowed disabled:opacity-70 dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-900 dark:hover:text-neutral-100"
       >
         Send Message
       </button>
-      <p
-        id="contact-status"
-        class="text-sm text-neutral-600 dark:text-neutral-400"
-        role="status"
-        aria-live="polite"
-      ></p>
+      <div>
+        <div
+          id="contact-status-wrap"
+          class="contact-status hidden"
+          data-state="idle"
+          role="status"
+          aria-live="polite"
+          aria-hidden="true"
+        >
+          <div id="contact-status-icon" class="contact-status__icon" aria-hidden="true"></div>
+          <div class="min-w-0">
+            <p id="contact-status-title" class="contact-status__title"></p>
+            <p id="contact-status-message" class="contact-status__message"></p>
+          </div>
+        </div>
+      </div>
     </form>
   </div>
 </section>
 
 <script>
   const contactForm = document.querySelector("#contact-form");
+  const subjectInput = document.querySelector("#contact-subject");
   const bodyInput = document.querySelector("#contact-body");
   const bodyCounter = document.querySelector("#contact-body-counter");
-
+  const submitButton = document.querySelector("#contact-submit");
+  const statusWrap = document.querySelector("#contact-status-wrap");
+  const statusIcon = document.querySelector("#contact-status-icon");
+  const statusTitle = document.querySelector("#contact-status-title");
+  const statusMessage = document.querySelector("#contact-status-message");
   const updateBodyCounter = () => {
     if (!(bodyInput instanceof HTMLTextAreaElement) || !(bodyCounter instanceof HTMLElement)) {
       return;
@@ -76,12 +91,102 @@
     bodyInput.addEventListener("input", updateBodyCounter);
   }
 
+  const iconMap = {
+    sending: `
+      <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+        <path class="opacity-90" d="M22 12a10 10 0 00-10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+      </svg>
+    `,
+    success: `
+      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
+        <path d="M20 7L10 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    `,
+    error: `
+      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
+        <path d="M12 8v5m0 3h.01M22 12A10 10 0 112 12a10 10 0 0120 0z" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    `,
+  };
+
+  const hideStatus = () => {
+    if (!(statusWrap instanceof HTMLElement)) {
+      return;
+    }
+    statusWrap.classList.add("hidden");
+    statusWrap.setAttribute("aria-hidden", "true");
+    statusWrap.dataset.state = "idle";
+  };
+
+  const setStatus = (
+    state,
+    title,
+    message,
+    htmlMessage = undefined,
+  ) => {
+    if (
+      !(statusWrap instanceof HTMLElement) ||
+      !(statusIcon instanceof HTMLElement) ||
+      !(statusTitle instanceof HTMLElement) ||
+      !(statusMessage instanceof HTMLElement)
+    ) {
+      return;
+    }
+
+    statusWrap.classList.remove(
+      "contact-status--sending",
+      "contact-status--success",
+      "contact-status--error",
+      "hidden",
+      "contact-status-enter",
+    );
+    statusWrap.classList.add(`contact-status--${state}`);
+    statusWrap.dataset.state = state;
+    statusWrap.setAttribute("aria-hidden", "false");
+
+    if (state === "error") {
+      statusWrap.setAttribute("role", "alert");
+      statusWrap.setAttribute("aria-live", "assertive");
+    } else {
+      statusWrap.setAttribute("role", "status");
+      statusWrap.setAttribute("aria-live", "polite");
+    }
+
+    statusIcon.innerHTML = iconMap[state] || "";
+    statusTitle.textContent = title;
+
+    if (typeof htmlMessage === "string") {
+      statusMessage.innerHTML = htmlMessage;
+    } else {
+      statusMessage.textContent = message;
+    }
+
+    void statusWrap.offsetWidth;
+    statusWrap.classList.add("contact-status-enter");
+
+  };
+
+  const clearStickyError = () => {
+    if (!(statusWrap instanceof HTMLElement)) {
+      return;
+    }
+    if (statusWrap.dataset.state === "error") {
+      hideStatus();
+    }
+  };
+
+  if (subjectInput instanceof HTMLInputElement) {
+    subjectInput.addEventListener("input", clearStickyError);
+  }
+
+  if (bodyInput instanceof HTMLTextAreaElement) {
+    bodyInput.addEventListener("input", clearStickyError);
+  }
+
   if (contactForm instanceof HTMLFormElement) {
     contactForm.addEventListener("submit", (event) => {
       event.preventDefault();
-
-      const subjectInput = document.querySelector("#contact-subject");
-      const bodyInput = document.querySelector("#contact-body");
 
       if (!(subjectInput instanceof HTMLInputElement) || !(bodyInput instanceof HTMLTextAreaElement)) {
         return;
@@ -92,15 +197,12 @@
         return;
       }
 
-      const submitButton = document.querySelector("#contact-submit");
-      const statusElement = document.querySelector("#contact-status");
-
-      if (!(submitButton instanceof HTMLButtonElement) || !(statusElement instanceof HTMLElement)) {
+      if (!(submitButton instanceof HTMLButtonElement)) {
         return;
       }
 
       submitButton.disabled = true;
-      statusElement.textContent = "Sending...";
+      setStatus("sending", "Sending your message...", "Please wait a moment while we deliver it.");
 
       fetch("/api/contact", {
         method: "POST",
@@ -114,16 +216,24 @@
       })
         .then(async (response) => {
           if (!response.ok) {
-            const payload = await response.json().catch(() => ({}));
-            throw new Error(payload?.message || "Unable to send message.");
+            throw new Error("not_sent");
           }
 
           contactForm.reset();
           updateBodyCounter();
-          statusElement.textContent = "Message sent successfully.";
+          setStatus(
+            "success",
+            "Message sent",
+            "Thanks! Your message was sent. I'll get back to you soon.",
+          );
         })
-        .catch((error) => {
-          statusElement.textContent = error instanceof Error ? error.message : "Unable to send message.";
+        .catch(() => {
+          setStatus(
+            "error",
+            "Message not sent",
+            "Sorry, please try again in a moment.",
+            "Sorry, please try again in a moment. If this keeps happening, email <strong>rohailzuberi5@gmail.com</strong>.",
+          );
         })
         .finally(() => {
           submitButton.disabled = false;
@@ -131,3 +241,4 @@
     });
   }
 </script>
+
